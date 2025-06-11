@@ -53,4 +53,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(related: Category::class, foreignKey: 'user_id');
     }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(related: Task::class, foreignKey: 'user_id');
+    }
 }
