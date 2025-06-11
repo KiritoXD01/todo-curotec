@@ -7,7 +7,8 @@
         "dev": "vite",
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
-        "lint": "eslint . --fix"
+        "lint": "eslint . --fix",
+        "shadcn-vue": "shadcn-vue"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
@@ -25,6 +26,7 @@
     "dependencies": {
         "@inertiajs/vue3": "^2.0.0",
         "@tailwindcss/vite": "^4.1.1",
+        "@tanstack/vue-table": "^8.21.3",
         "@vitejs/plugin-vue": "^5.2.1",
         "@vueuse/core": "^12.8.2",
         "class-variance-authority": "^0.7.1",
@@ -33,6 +35,7 @@
         "laravel-vite-plugin": "^1.0",
         "lucide-vue-next": "^0.468.0",
         "reka-ui": "^2.2.0",
+        "shadcn-vue": "https://pkg.pr.new/shadcn-vue@1266",
         "tailwind-merge": "^3.2.0",
         "tailwindcss": "^4.1.1",
         "tw-animate-css": "^1.2.5",
