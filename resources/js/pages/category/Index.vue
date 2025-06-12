@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import DataTable from '@/components/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Category } from '@/types';
+import type { BreadcrumbItem, Category, Pagination } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
 
 interface Props {
-    categories: Category[];
+    items: Pagination<Category>;
 }
 
 defineProps<Props>();
@@ -26,7 +26,12 @@ const columns: ColumnDef<Category>[] = [
     {
         accessorKey: 'name',
         header: 'Name',
-        cell: ({ row }) => row,
+        cell: ({ row }) => row.getValue('name'),
+    },
+    {
+        accessorKey: 'created_at',
+        header: 'Created at',
+        cell: ({ row }) => row.getValue('created_at'),
     },
 ];
 </script>
@@ -36,7 +41,7 @@ const columns: ColumnDef<Category>[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="container mx-auto p-2">
-            <DataTable :columns="columns" :data="categories" />
+            <DataTable :columns="columns" :data="items.data" />
         </div>
     </AppLayout>
 </template>

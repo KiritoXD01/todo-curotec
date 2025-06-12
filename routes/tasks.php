@@ -12,5 +12,3 @@ Route::controller(TaskController::class)
     ->group(function () {
         Route::get('/', 'index')->name('index');
     });
-
-

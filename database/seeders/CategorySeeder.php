@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\Category;
@@ -15,13 +17,13 @@ class CategorySeeder extends Seeder
     {
         if (app()->isLocal()) {
             $users = User::query()
-                ->select("id")
-                ->pluck("id")
+                ->select('id')
+                ->pluck('id')
                 ->all();
 
             foreach ($users as $user) {
                 Category::factory()->count(5)->create([
-                    "user_id" => $user
+                    'user_id' => $user,
                 ]);
             }
         }

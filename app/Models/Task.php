@@ -1,16 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\TaskPriorityEnum;
 use App\Enums\TaskStatusEnum;
+use Database\Factories\TaskFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Task extends Model
 {
-    use HasUuids;
+    /** @use HasFactory<TaskFactory> */
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'name',
@@ -26,7 +31,7 @@ class Task extends Model
     protected $casts = [
         'priority' => TaskPriorityEnum::class,
         'status' => TaskStatusEnum::class,
-        'due_date' => 'datetime'
+        'due_date' => 'datetime',
     ];
 
     public function uniqueIds(): array

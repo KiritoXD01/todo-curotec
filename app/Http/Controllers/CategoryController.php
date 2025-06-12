@@ -16,12 +16,12 @@ class CategoryController extends Controller
         $user = auth()->user();
 
         $categories = Category::query()
-            ->whereBelongsTo($user)
+            ->where('user_id', $user->getAuthIdentifier())
             ->latest()
-            ->paginate(10);
+            ->simplePaginate(10);
 
         return Inertia::render('category/Index', [
-            'categories' => CategoryResource::collection($categories),
+            'items' => CategoryResource::collection($categories),
         ]);
     }
 }
