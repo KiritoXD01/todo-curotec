@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import DataTable from '@/components/DataTable.vue';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Pagination, Task } from '@/types';
 import { Head } from '@inertiajs/vue3';
@@ -59,6 +61,14 @@ const columns: ColumnDef<Task>[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="container mx-auto p-2">
+            <Dialog>
+                <DialogTrigger as-child>
+                    <Button variant="outline">Create Task</Button>
+                </DialogTrigger>
+                <DialogContent class="sm:max-w-[425px]">
+                    <DialogHeader></DialogHeader>
+                </DialogContent>
+            </Dialog>
             <DataTable :columns="columns" :data="items.data" />
         </div>
     </AppLayout>
