@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCategoryStore } from '@/store/category';
 import { useForm } from '@inertiajs/vue3';
+import Swal from 'sweetalert2';
 
 const store = useCategoryStore();
 const title = store.mode === 'create' ? 'Create Category' : 'Edit Category';
@@ -16,9 +17,21 @@ const form = useForm({
 });
 
 const onSubmit = () => {
-    form.post(route('categories.store'), {
-        onSuccess: () => console.log('completed'),
-        onError: () => console.log('error'),
+    Swal.fire({
+        icon: 'success',
+        showConfirmButton: false,
+        showCancelButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+            form.post(route('categories.store'), {
+                onSuccess: () => {
+                    store.toggleDialog();
+                    Swal.close();
+                    Swal.fire({ title: 'Success!', text: 'Category created!', icon: 'success' });
+                },
+                onError: () => Swal.close(),
+            });
+        },
     });
 };
 </script>
@@ -46,7 +59,7 @@ const onSubmit = () => {
             </form>
             <DialogFooter>
                 <DialogClose as-child>
-                    <Button type="button" variant="secondary" @click="store.toggleDialog()"> Close</Button>
+                    <Button type="button" variant="secondary" @click="store.toggleDialog()"> Close </Button>
                 </DialogClose>
                 <Button :form="formId">Save</Button>
             </DialogFooter>
