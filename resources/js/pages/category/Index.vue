@@ -35,6 +35,8 @@ const columns: ColumnDef<Category>[] = [
     <Head title="Categories" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <DataTable :columns="columns" :data="categories" />
+        <div class="container mx-auto p-2">
+            <DataTable :columns="columns" :data="categories" />
+        </div>
     </AppLayout>
 </template>
