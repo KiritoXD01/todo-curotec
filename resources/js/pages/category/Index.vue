@@ -3,10 +3,10 @@ import FormDialog from '@/components/category/FormDialog.vue';
 import DataTable from '@/components/DataTable.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useCategoryStore } from '@/store/category';
 import type { BreadcrumbItem, Category, Pagination } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
-import { ref } from 'vue';
 
 interface Props {
     items: Pagination<Category>;
@@ -38,9 +38,7 @@ const columns: ColumnDef<Category>[] = [
     },
 ];
 
-const openDialog = ref(false);
-
-const toggleDialog = () => (openDialog.value = !openDialog.value);
+const store = useCategoryStore();
 </script>
 
 <template>
@@ -48,8 +46,8 @@ const toggleDialog = () => (openDialog.value = !openDialog.value);
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="container mx-auto p-2">
-            <Button variant="outline" @click="toggleDialog">Create Category</Button>
-            <FormDialog mode="create" :open="openDialog" />
+            <Button variant="outline" @click="store.toggleDialog()">Create Category</Button>
+            <FormDialog />
             <DataTable :columns="columns" :data="items.data" />
         </div>
     </AppLayout>
