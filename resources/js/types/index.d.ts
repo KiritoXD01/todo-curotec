@@ -35,4 +35,9 @@ export interface User {
     updated_at: string;
 }
 
+export interface Category {
+    id: number;
+    name: string;
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;

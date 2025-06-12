@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(CategoryController::class)
+    ->middleware(['auth', 'verified'])
     ->prefix('categories')
     ->name('categories.')
     ->group(function () {

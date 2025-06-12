@@ -19,11 +19,14 @@ class UserSeeder extends Seeder
                 'name' => 'Test User',
             ]);
         } else {
-            User::query()->create([
-                'name' => 'Test User',
-                'password' => 'password',
-                'email' => 'test@test.com',
-            ]);
+            User::query()->firstOrCreate(
+                attributes: [
+                    'email' => 'test@test.com',
+                ],
+                values: [
+                    'name' => 'Test User',
+                    'password' => 'password',
+                ]);
         }
     }
 }

@@ -9,14 +9,14 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/dashboard',
     },
     {
-        title: 'Categories',
-        href: '/categories',
+        title: 'Tasks',
+        href: '/tasks',
     },
 ];
 </script>
 
 <template>
-    <Head title="Categories" />
+    <Head title="Tasks" />
 
     <AppLayout :breadcrumbs="breadcrumbs"></AppLayout>
 </template>
