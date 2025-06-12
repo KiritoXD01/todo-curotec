@@ -19,7 +19,7 @@ export default defineConfig({
                     includeAbsolute: false,
                 },
                 compilerOptions: {
-                    isCustomElement: (tag) => ['DialogClose', 'Table'].includes(tag),
+                    isCustomElement: (tag) => ['DialogClose', 'Table', 'DialogDescription'].includes(tag),
                 },
             },
         }),

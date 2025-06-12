@@ -1,59 +1,55 @@
 <script setup lang="ts">
+import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useCategoryStore } from '@/store/category';
-import { toTypedSchema } from '@vee-validate/zod';
-import { Field as FormField, Form } from 'vee-validate';
-import { z } from 'zod';
+import { useForm } from '@inertiajs/vue3';
 
 const store = useCategoryStore();
 const title = store.mode === 'create' ? 'Create Category' : 'Edit Category';
 const formId = 'category-form';
 
-interface FormData {
-    name: string;
-}
+const form = useForm({
+    name: '',
+});
 
-const formSchema = toTypedSchema(
-    z.object({
-        name: z.string().min(1).max(191),
-    }),
-);
-
-function onSubmit(values: any): void {
-    const data = values as FormData;
-    console.log(data);
-}
+const onSubmit = () => {
+    form.post(route('categories.store'), {
+        onSuccess: () => console.log('completed'),
+        onError: () => console.log('error'),
+    });
+};
 </script>
 
 <template>
-    <Form v-slot="{ handleSubmit }" :as="formId" :validation-schema="formSchema">
-        <Dialog :open="store.openDialog">
-            <DialogContent class="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>{{ title }}</DialogTitle>
-                </DialogHeader>
-                <form :id="formId" @submit="handleSubmit($event, onSubmit)">
-                    <FormField v-slot="{ componentField }" name="name">
-                        <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                                <Input type="text" placeholder="Name..." v-bind="componentField" />
-                            </FormControl>
-                            <FormDescription> The name of the category</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    </FormField>
-                </form>
-                <DialogFooter>
-                    <DialogClose as-child>
-                        <Button type="button" variant="secondary" @click="store.toggleDialog()"> Close</Button>
-                    </DialogClose>
-                    <Button type="submit" :form="formId"> Save</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    </Form>
+    <Dialog :open="store.openDialog">
+        <DialogContent class="sm:max-w-[425px]">
+            <DialogHeader>
+                <DialogTitle>{{ title }}</DialogTitle>
+            </DialogHeader>
+            <form :id="formId" @submit.prevent="onSubmit" class="space-y-6">
+                <div class="grid gap-2">
+                    <Label for="email">Name</Label>
+                    <Input
+                        id="name"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.name"
+                        required
+                        autocomplete="off"
+                        placeholder="Category Name"
+                    />
+                    <InputError class="mt-2" :message="form.errors.name" />
+                </div>
+            </form>
+            <DialogFooter>
+                <DialogClose as-child>
+                    <Button type="button" variant="secondary" @click="store.toggleDialog()"> Close</Button>
+                </DialogClose>
+                <Button :form="formId">Save</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
 </template>
