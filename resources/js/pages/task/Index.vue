@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import DataTable from '@/components/DataTable.vue';
+import FormDialog from '@/components/task/FormDialog.vue';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useTaskStore } from '@/store/task';
 import type { BreadcrumbItem, Pagination, Task } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
@@ -54,6 +55,8 @@ const columns: ColumnDef<Task>[] = [
         cell: ({ row }) => row.getValue('status'),
     },
 ];
+
+const store = useTaskStore();
 </script>
 
 <template>
@@ -61,14 +64,8 @@ const columns: ColumnDef<Task>[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="container mx-auto p-2">
-            <Dialog>
-                <DialogTrigger as-child>
-                    <Button variant="outline">Create Task</Button>
-                </DialogTrigger>
-                <DialogContent class="sm:max-w-[425px]">
-                    <DialogHeader></DialogHeader>
-                </DialogContent>
-            </Dialog>
+            <Button variant="outline" @click="store.toggleDialog()">Create Task</Button>
+            <FormDialog />
             <DataTable :columns="columns" :data="items.data" />
         </div>
     </AppLayout>

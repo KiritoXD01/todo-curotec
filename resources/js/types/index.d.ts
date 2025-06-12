@@ -76,3 +76,4 @@ export interface Pagination<T> {
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
+export type ModeOptions = 'create' | 'edit';

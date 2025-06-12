@@ -3,22 +3,24 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useCategoryStore } from '@/store/category';
+import { useTaskStore } from '@/store/task';
 import { toTypedSchema } from '@vee-validate/zod';
 import { Field as FormField, Form } from 'vee-validate';
 import { z } from 'zod';
 
-const store = useCategoryStore();
-const title = store.mode === 'create' ? 'Create Category' : 'Edit Category';
-const formId = 'category-form';
+const store = useTaskStore();
+const title = store.mode === 'create' ? 'Create Task' : 'Edit Task';
+const formId = 'task-form';
 
 interface FormData {
-    name: string;
+    title: string;
+    description: string;
 }
 
 const formSchema = toTypedSchema(
     z.object({
-        name: z.string().min(1).max(191),
+        title: z.string().min(1).max(191),
+        description: z.string().max(500),
     }),
 );
 
@@ -29,20 +31,20 @@ function onSubmit(values: any): void {
 </script>
 
 <template>
-    <Form v-slot="{ handleSubmit }" :as="formId" :validation-schema="formSchema">
+    <Form v-slot="{ handleSubmit }" as="task-form" :validation-schema="formSchema">
         <Dialog :open="store.openDialog">
             <DialogContent class="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>{{ title }}</DialogTitle>
                 </DialogHeader>
                 <form :id="formId" @submit="handleSubmit($event, onSubmit)">
-                    <FormField v-slot="{ componentField }" name="name">
+                    <FormField v-slot="{ componentField }" name="title">
                         <FormItem>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Title</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="Name..." v-bind="componentField" />
+                                <Input type="text" placeholder="Title..." v-bind="componentField" />
                             </FormControl>
-                            <FormDescription> The name of the category</FormDescription>
+                            <FormDescription> The title for the task</FormDescription>
                             <FormMessage />
                         </FormItem>
                     </FormField>
