@@ -1,11 +1,10 @@
-export enum TaskTypeEnum {
+export enum TaskPriorityEnum {
     LOW = 'low',
     MEDIUM = 'medium',
     HIGH = 'high',
 }
 
 export enum TaskStatusEnum {
-    ALL = 'all',
     PENDING = 'pending',
     COMPLETED = 'completed',
 }

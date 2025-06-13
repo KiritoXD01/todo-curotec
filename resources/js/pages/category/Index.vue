@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import FormDialog from '@/components/category/FormDialog.vue';
 import DataTable from '@/components/DataTable.vue';
+import FormDialog from '@/components/category/FormDialog.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useCategoryStore } from '@/store/category';
-import type { BreadcrumbItem, Category, Pagination } from '@/types';
+import type { BreadcrumbItem, Pagination, Category } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
+import { onMounted } from 'vue';
 
 interface Props {
     items: Pagination<Category>;
@@ -33,12 +34,16 @@ const columns: ColumnDef<Category>[] = [
     },
     {
         accessorKey: 'created_at',
-        header: 'Created at',
-        cell: ({ row }) => row.getValue('created_at'),
+        header: 'Created At',
+        cell: ({ row }) => new Date(row.getValue('created_at')).toLocaleDateString(),
     },
 ];
 
 const store = useCategoryStore();
+
+onMounted(() => {
+    store.fetchItems();
+});
 </script>
 
 <template>

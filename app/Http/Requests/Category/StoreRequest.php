@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Category;
 
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -25,7 +27,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:191', Rule::unique('categories', 'name')->where(fn(Builder $query) => $query->where('user_id', auth()->user()->getAuthIdentifier()))],
+            'name' => ['required', 'string', 'max:191', Rule::unique('categories', 'name')->where(fn (Builder $query) => $query->where('user_id', auth()->user()->getAuthIdentifier()))],
         ];
     }
 }

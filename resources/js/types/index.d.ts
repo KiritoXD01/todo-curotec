@@ -53,6 +53,8 @@ export interface Task {
     status: TaskStatusEnum;
     category: string | null;
     subcategory: string | null;
+    category_id: number | null;
+    subcategory_id: number | null;
     created_at: string;
     updated_at: string;
 }

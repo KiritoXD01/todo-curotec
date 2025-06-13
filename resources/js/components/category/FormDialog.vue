@@ -1,68 +1,109 @@
 <script setup lang="ts">
-import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { useCategoryStore } from '@/store/category';
-import { useForm } from '@inertiajs/vue3';
+import { useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import * as z from 'zod';
+import { watch } from 'vue';
 import Swal from 'sweetalert2';
 
 const store = useCategoryStore();
-const title = store.mode === 'create' ? 'Create Category' : 'Edit Category';
-const formId = 'category-form';
+
+const formSchema = toTypedSchema(
+    z.object({
+        name: z.string().min(1, 'Name is required'),
+    })
+);
 
 const form = useForm({
-    name: '',
+    validationSchema: formSchema,
 });
 
-const onSubmit = () => {
-    Swal.fire({
-        icon: 'success',
-        showConfirmButton: false,
-        showCancelButton: false,
-        didOpen: () => {
-            Swal.showLoading();
-            form.post(route('categories.store'), {
-                onSuccess: () => {
-                    store.toggleDialog();
-                    Swal.close();
-                    Swal.fire({ title: 'Success!', text: 'Category created!', icon: 'success' });
-                },
-                onError: () => Swal.close(),
+const onSubmit = form.handleSubmit(async (values) => {
+    try {
+        Swal.fire({
+            title: 'Processing...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        if (store.mode === 'create') {
+            await store.createItem(values);
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Category has been created successfully',
+                timer: 2000,
+                showConfirmButton: false
             });
-        },
-    });
-};
+        } else if (store.currentItem) {
+            await store.updateItem(store.currentItem.id, values);
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Category has been updated successfully',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        store.toggleDialog();
+        form.resetForm();
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong! Please try again.',
+        });
+    }
+});
+
+watch(
+    () => store.currentItem,
+    (newItem) => {
+        if (newItem) {
+            form.setValues({
+                name: newItem.name,
+            });
+        } else {
+            form.resetForm();
+        }
+    }
+);
 </script>
 
 <template>
-    <Dialog :open="store.openDialog">
-        <DialogContent class="sm:max-w-[425px]">
+    <Dialog :open="store.dialog" @update:open="store.toggleDialog">
+        <DialogContent>
             <DialogHeader>
-                <DialogTitle>{{ title }}</DialogTitle>
+                <DialogTitle>{{ store.mode === 'create' ? 'Create' : 'Edit' }} Category</DialogTitle>
             </DialogHeader>
-            <form :id="formId" @submit.prevent="onSubmit" class="space-y-6">
-                <div class="grid gap-2">
-                    <Label for="email">Name</Label>
-                    <Input
-                        id="name"
-                        type="text"
-                        class="mt-1 block w-full"
-                        v-model="form.name"
-                        required
-                        autocomplete="off"
-                        placeholder="Category Name"
-                    />
-                    <InputError class="mt-2" :message="form.errors.name" />
+
+            <form @submit="onSubmit">
+                <FormField v-slot="{ componentField }" name="name">
+                    <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                            <Input v-bind="componentField" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+
+                <div class="flex justify-end gap-2 mt-4">
+                    <Button type="button" variant="outline" @click="store.toggleDialog">
+                        Cancel
+                    </Button>
+                    <Button type="submit">
+                        {{ store.mode === 'create' ? 'Create' : 'Update' }}
+                    </Button>
                 </div>
-            </form>
-            <DialogFooter>
-                <DialogClose as-child>
-                    <Button type="button" variant="secondary" @click="store.toggleDialog()"> Close </Button>
-                </DialogClose>
-                <Button :form="formId">Save</Button>
-            </DialogFooter>
+            </Form>
         </DialogContent>
     </Dialog>
 </template>
