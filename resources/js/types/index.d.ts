@@ -66,7 +66,7 @@ export interface Pagination<T> {
         first: string | null;
         last: string | null;
         next: string | null;
-        previous: string | null;
+        prev: string | null;
     };
     data: T[];
     meta: {
@@ -76,6 +76,7 @@ export interface Pagination<T> {
         path: string;
         per_page: number;
         to: number;
+        total: number;
     };
 }
 

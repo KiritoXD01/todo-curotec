@@ -36,14 +36,6 @@ const columns: ColumnDef<Task>[] = [
         cell: ({ row }) => row.getValue('title'),
     },
     {
-        accessorKey: 'description',
-        header: 'Description',
-        cell: ({ row }) => {
-            const value = row.getValue('description') as string;
-            return value?.length > 25 ? `${value.slice(0, 25)}...` : value;
-        },
-    },
-    {
         accessorKey: 'due_date',
         header: 'Due Date',
         cell: ({ row }) => {
@@ -60,6 +52,16 @@ const columns: ColumnDef<Task>[] = [
         accessorKey: 'status',
         header: 'Status',
         cell: ({ row }) => row.getValue('status'),
+    },
+    {
+        accessorKey: 'created_at',
+        header: 'Created At',
+        cell: ({ row }) => row.getValue('created_at')
+    },
+    {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        cell: ({ row }) => row.getValue('updated_at')
     },
     {
         id: 'actions',
@@ -113,6 +115,10 @@ const columns: ColumnDef<Task>[] = [
     },
 ];
 
+const handlePageChange = (url: string) => {
+    store.fetchItems(url);
+};
+
 onMounted(() => {
     store.fetchItems();
 });
@@ -125,7 +131,12 @@ onMounted(() => {
         <div class="container mx-auto p-2">
             <Button variant="outline" @click="store.toggleDialog()">Create Task</Button>
             <FormDialog />
-            <DataTable :columns="columns" :data="items.data" />
+            <DataTable
+                :columns="columns"
+                :data="items.data"
+                :pagination="items"
+                @page-change="handlePageChange"
+            />
         </div>
     </AppLayout>
 </template>

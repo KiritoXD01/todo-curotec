@@ -12,10 +12,10 @@ export const useCategoryStore = defineStore('category', () => {
     const currentItem = ref<Category | null>(null);
 
     // Actions
-    async function fetchItems(page = 1) {
+    async function fetchItems(url?: string) {
         loading.value = true;
         try {
-            router.get(`/categories?page=${page}`, {}, {
+            router.get(url || '/categories', {}, {
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: (page) => {
@@ -37,9 +37,7 @@ export const useCategoryStore = defineStore('category', () => {
         try {
             router.post('/categories', data, {
                 preserveScroll: true,
-                onSuccess: (page) => {
-                    const category = page.props.category as Category;
-                    items.value.push(category);
+                onSuccess: () => {
                     toggleDialog();
                 },
             });
@@ -53,12 +51,7 @@ export const useCategoryStore = defineStore('category', () => {
         try {
             router.put(`/categories/${id}`, data, {
                 preserveScroll: true,
-                onSuccess: (page) => {
-                    const category = page.props.category as Category;
-                    const index = items.value.findIndex(item => item.id === id);
-                    if (index !== -1) {
-                        items.value[index] = category;
-                    }
+                onSuccess: () => {
                     toggleDialog();
                 },
             });

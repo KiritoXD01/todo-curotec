@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Category\StoreRequest;
-use App\Http\Resources\CategoryResource;
-use App\Models\Category;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Resources\CategoryResource;
+use App\Http\Requests\Category\StoreRequest;
+use App\Http\Requests\Category\UpdateRequest;
 
 class CategoryController extends Controller
 {
@@ -34,6 +35,13 @@ class CategoryController extends Controller
         $data = $request->validated();
 
         $request->user()->categories()->create($data);
+
+        return redirect()->back();
+    }
+
+    public function update(UpdateRequest $request, Category $category): RedirectResponse
+    {
+        $category->update($request->validated());
 
         return redirect()->back();
     }

@@ -7,6 +7,7 @@ import { useCategoryStore } from '@/store/category';
 import type { BreadcrumbItem, Pagination, Category } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
+import Swal from 'sweetalert2';
 import { h, onMounted } from 'vue';
 
 interface Props {
@@ -33,9 +34,19 @@ const columns: ColumnDef<Category>[] = [
         cell: ({ row }) => row.getValue('name'),
     },
     {
+        accessorKey: 'parent_name',
+        header: 'Parent',
+        cell: ({ row }) => row.getValue('parent_name') || '-',
+    },
+    {
         accessorKey: 'created_at',
         header: 'Created At',
-        cell: ({ row }) => new Date(row.getValue('created_at')).toLocaleDateString(),
+        cell: ({ row }) => row.getValue('created_at')
+    },
+    {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        cell: ({ row }) => row.getValue('updated_at')
     },
     {
         id: 'actions',
@@ -43,11 +54,46 @@ const columns: ColumnDef<Category>[] = [
         cell: ({ row }) => {
             const category = row.original;
             return h('div', { class: 'flex gap-2' }, [
-                h(Button, { variant: 'outline', size: 'sm', onClick: () => store.setCurrentItem(category), }, 'Edit'),
+                h(Button, {
+                    variant: 'outline',
+                    size: 'sm',
+                    onClick: () => {
+                        store.setCurrentItem(category);
+                        store.toggleDialog();
+                    },
+                }, 'Edit'),
                 h(Button, {
                     variant: 'destructive',
                     size: 'sm',
-                    onClick: () => store.deleteItem(category.id),
+                    onClick: async () => {
+                        const result = await Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, delete it!'
+                        });
+
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Deleting...',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            await store.deleteItem(category.id);
+
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'Category has been deleted.',
+                                icon: 'success'
+                            });
+                        }
+                    },
                 }, 'Delete'),
             ]);
         },
@@ -55,6 +101,10 @@ const columns: ColumnDef<Category>[] = [
 ];
 
 const store = useCategoryStore();
+
+const handlePageChange = (url: string) => {
+    store.fetchItems(url);
+};
 
 onMounted(() => {
     store.fetchItems();
@@ -65,10 +115,15 @@ onMounted(() => {
     <Head title="Categories" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="container mx-auto p-2">
+        <div class="container mx-auto p-2 space-y-4">
             <Button variant="outline" @click="store.toggleDialog()">Create Category</Button>
             <FormDialog />
-            <DataTable :columns="columns" :data="items.data" />
+            <DataTable
+                :columns="columns"
+                :data="items.data"
+                :pagination="items"
+                @page-change="handlePageChange"
+            />
         </div>
     </AppLayout>
 </template>

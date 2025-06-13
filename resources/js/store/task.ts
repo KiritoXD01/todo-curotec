@@ -12,10 +12,10 @@ export const useTaskStore = defineStore('task', () => {
     const currentItem = ref<Task | null>(null);
 
     // Actions
-    async function fetchItems(page = 1) {
+    async function fetchItems(url?: string) {
         loading.value = true;
         try {
-            router.get(`/tasks?page=${page}`, {}, {
+            router.get(url || '/tasks', {}, {
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: (page) => {
@@ -37,9 +37,7 @@ export const useTaskStore = defineStore('task', () => {
         try {
             router.post('/tasks', data, {
                 preserveScroll: true,
-                onSuccess: (page) => {
-                    const task = page.props.task as Task;
-                    items.value.push(task);
+                onSuccess: () => {
                     toggleDialog();
                 },
             });
@@ -53,12 +51,7 @@ export const useTaskStore = defineStore('task', () => {
         try {
             router.put(`/tasks/${id}`, data, {
                 preserveScroll: true,
-                onSuccess: (page) => {
-                    const task = page.props.task as Task;
-                    const index = items.value.findIndex(item => item.id === id);
-                    if (index !== -1) {
-                        items.value[index] = task;
-                    }
+                onSuccess: () => {
                     toggleDialog();
                 },
             });
