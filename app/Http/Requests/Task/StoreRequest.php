@@ -30,11 +30,11 @@ class StoreRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:191'],
             'description' => ['nullable', 'string', 'max:500'],
-            'due_date' => ['nullable', 'datetime'],
+            'due_date' => ['nullable', 'date'],
             'priority' => ['required', 'string', Rule::enum(TaskPriorityEnum::class)],
             'status' => ['required', 'string', Rule::enum(TaskStatusEnum::class)],
             'category_id' => ['required', 'exists:categories,id'],
-            'subcategory_id' => ['nullable', 'exists:subcategories,id', 'required_if:category_id'],
+            'subcategory_id' => ['nullable', 'exists:categories,id'],
         ];
     }
 }

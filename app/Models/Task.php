@@ -18,7 +18,7 @@ class Task extends Model
     use HasFactory, HasUuids;
 
     protected $fillable = [
-        'name',
+        'title',
         'description',
         'due_date',
         'category_id',

@@ -4,19 +4,22 @@ import FormDialog from '@/components/task/FormDialog.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useTaskStore } from '@/store/task';
-import type { BreadcrumbItem, Pagination, Task } from '@/types';
+import type { BreadcrumbItem, Category, Pagination, Task } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
 import { onMounted, h } from 'vue';
 import Swal from 'sweetalert2';
+import { useUpperFirstLetter } from '@/composables/useUpperFirstLetter';
 
 interface Props {
     items: Pagination<Task>;
+    categories: Category[];
 }
 
 defineProps<Props>();
 
 const store = useTaskStore();
+const { upperFirstLetter } = useUpperFirstLetter();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -46,12 +49,12 @@ const columns: ColumnDef<Task>[] = [
     {
         accessorKey: 'priority',
         header: 'Priority',
-        cell: ({ row }) => row.getValue('priority'),
+        cell: ({ row }) => upperFirstLetter(row.getValue('priority')),
     },
     {
         accessorKey: 'status',
         header: 'Status',
-        cell: ({ row }) => row.getValue('status'),
+        cell: ({ row }) => upperFirstLetter(row.getValue('status')),
     },
     {
         accessorKey: 'created_at',
@@ -125,18 +128,14 @@ onMounted(() => {
 </script>
 
 <template>
+
     <Head title="Tasks" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="container mx-auto p-2">
+        <div class="container mx-auto p-2 space-y-4">
             <Button variant="outline" @click="store.toggleDialog()">Create Task</Button>
-            <FormDialog />
-            <DataTable
-                :columns="columns"
-                :data="items.data"
-                :pagination="items"
-                @page-change="handlePageChange"
-            />
+            <FormDialog :categories="categories" />
+            <DataTable :columns="columns" :data="items.data" :pagination="items" @page-change="handlePageChange" />
         </div>
     </AppLayout>
 </template>

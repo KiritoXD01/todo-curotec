@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Task\StoreRequest;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\TaskResource;
+use App\Models\Category;
 use App\Models\Task;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Http\Resources\TaskResource;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
-use App\Http\Requests\Task\StoreRequest;
 
 class TaskController extends Controller
 {
@@ -24,8 +26,14 @@ class TaskController extends Controller
             ->latest()
             ->simplePaginate(10);
 
+        $categories = Category::query()
+            ->where("user_id", $user_id)
+            ->select("id", "name", "parent_id")
+            ->get();
+
         return Inertia::render('task/Index', [
             'items' => TaskResource::collection($tasks),
+            'categories' => $categories
         ]);
     }
 
