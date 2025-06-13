@@ -28,7 +28,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:191', Rule::unique('categories', 'name')->where(fn(Builder $query) => $query->where('user_id', Auth::id()))],
+            'name' => ['required', 'string', 'max:191', Rule::unique('categories', 'name')->where(fn (Builder $query) => $query->where('user_id', Auth::id()))],
             'parent_id' => ['nullable', 'exists:categories,id'],
         ];
     }

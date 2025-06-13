@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Inertia\Response;
-use App\Models\Category;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
-use App\Http\Resources\CategoryResource;
 use App\Http\Requests\Category\StoreRequest;
 use App\Http\Requests\Category\UpdateRequest;
+use App\Http\Resources\CategoryResource;
+use App\Models\Category;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class CategoryController extends Controller
 {
     public function index(): Response
     {
-        $userId = Auth::id();
+        $user_id = Auth::id();
 
         $categories = Category::query()
             ->with('parent')
-            ->where('user_id', $userId)
+            ->where('user_id', $user_id)
             ->latest()
             ->simplePaginate(10);
 
