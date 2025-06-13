@@ -9,12 +9,14 @@ import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
 import { watch } from 'vue';
 import Swal from 'sweetalert2';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const store = useCategoryStore();
 
 const formSchema = toTypedSchema(
     z.object({
-        name: z.string().min(1, 'Name is required'),
+        name: z.string().min(1, 'Name is required').max(191, 'Name must be less than 191 characters'),
+        parent_id: z.number().nullable(),
     })
 );
 
@@ -69,6 +71,7 @@ watch(
         if (newItem) {
             form.setValues({
                 name: newItem.name,
+                parent_id: newItem.parent_id,
             });
         } else {
             form.resetForm();
@@ -84,13 +87,32 @@ watch(
                 <DialogTitle>{{ store.mode === 'create' ? 'Create' : 'Edit' }} Category</DialogTitle>
             </DialogHeader>
 
-            <form @submit="onSubmit">
+            <form @submit="onSubmit" class="space-y-4">
                 <FormField v-slot="{ componentField }" name="name">
                     <FormItem>
                         <FormLabel>Name</FormLabel>
                         <FormControl>
                             <Input v-bind="componentField" />
                         </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+
+                <FormField v-slot="{ componentField }" name="parent_id">
+                    <FormItem>
+                        <FormLabel>Parent</FormLabel>
+                        <Select v-bind="componentField" class="w-full">
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select parent" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectItem v-for="item in store.items.filter(item => item.parent_id === null)" :key="item.id" :value="item.id">
+                                        {{ item.name }}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
                         <FormMessage />
                     </FormItem>
                 </FormField>

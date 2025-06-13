@@ -21,7 +21,7 @@ class Category extends Model
         'user_id',
     ];
 
-    public function category(): BelongsTo
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(related: Category::class, foreignKey: 'parent_id');
     }

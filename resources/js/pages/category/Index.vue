@@ -7,7 +7,7 @@ import { useCategoryStore } from '@/store/category';
 import type { BreadcrumbItem, Pagination, Category } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
-import { onMounted } from 'vue';
+import { h, onMounted } from 'vue';
 
 interface Props {
     items: Pagination<Category>;
@@ -36,6 +36,21 @@ const columns: ColumnDef<Category>[] = [
         accessorKey: 'created_at',
         header: 'Created At',
         cell: ({ row }) => new Date(row.getValue('created_at')).toLocaleDateString(),
+    },
+    {
+        id: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => {
+            const category = row.original;
+            return h('div', { class: 'flex gap-2' }, [
+                h(Button, { variant: 'outline', size: 'sm', onClick: () => store.setCurrentItem(category), }, 'Edit'),
+                h(Button, {
+                    variant: 'destructive',
+                    size: 'sm',
+                    onClick: () => store.deleteItem(category.id),
+                }, 'Delete'),
+            ]);
+        },
     },
 ];
 

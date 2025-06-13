@@ -23,6 +23,8 @@ class TaskResource extends JsonResource
             'description' => $this->description,
             'priority' => $this->priority,
             'status' => $this->status,
+            'category_id' => $this->category_id,
+            'subcategory_id' => $this->subcategory_id,
             'due_date' => Carbon::parse($this->due_date)->format('Y-m-d H:i:s'),
             'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('Y-m-d H:i:s'),

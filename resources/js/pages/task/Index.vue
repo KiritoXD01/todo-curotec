@@ -8,6 +8,7 @@ import type { BreadcrumbItem, Pagination, Task } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
 import { onMounted, h } from 'vue';
+import Swal from 'sweetalert2';
 
 interface Props {
     items: Pagination<Task>;
@@ -77,7 +78,35 @@ const columns: ColumnDef<Task>[] = [
                 h(Button, {
                     variant: 'destructive',
                     size: 'sm',
-                    onClick: () => store.deleteItem(task.id),
+                    onClick: async () => {
+                        const result = await Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, delete it!'
+                        });
+
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Deleting...',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            await store.deleteItem(task.id);
+
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'Task has been deleted.',
+                                icon: 'success'
+                            });
+                        }
+                    },
                 }, 'Delete'),
             ]);
         },

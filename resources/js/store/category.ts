@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import type { Category, Pagination } from '@/types';
+import type { Category, Pagination, ModeOptions } from '@/types';
 
 export const useCategoryStore = defineStore('category', () => {
     // State
     const items = ref<Category[]>([]);
     const loading = ref(false);
     const dialog = ref(false);
-    const mode = ref<'create' | 'edit'>('create');
+    const mode = ref<ModeOptions>('create');
     const currentItem = ref<Category | null>(null);
 
     // Actions

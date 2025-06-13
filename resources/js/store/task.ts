@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia';
 import { router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
-import type { Task, Pagination } from '@/types';
+import { ref } from 'vue';
+import type { Task, Pagination, ModeOptions } from '@/types';
 
 export const useTaskStore = defineStore('task', () => {
     // State
     const items = ref<Task[]>([]);
     const loading = ref(false);
     const dialog = ref(false);
-    const mode = ref<'create' | 'edit'>('create');
+    const mode = ref<ModeOptions>('create');
     const currentItem = ref<Task | null>(null);
 
     // Actions

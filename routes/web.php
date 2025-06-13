@@ -12,4 +12,4 @@ Route::get('dashboard', fn () => Inertia::render('Dashboard'))->middleware(['aut
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/category.php';
-require __DIR__.'/tasks.php';
+require __DIR__.'/task.php';
