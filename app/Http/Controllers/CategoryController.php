@@ -43,7 +43,7 @@ class CategoryController extends Controller
     public function update(UpdateRequest $request, Category $category): RedirectResponse
     {
         Gate::authorize('update', $category);
-        
+
         $category->update($request->validated());
 
         return redirect()->route('categories.index');
@@ -51,6 +51,8 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): RedirectResponse
     {
+        Gate::authorize('destroy', $category);
+
         $category->delete();
 
         return redirect()->route('categories.index');
