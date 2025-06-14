@@ -10,6 +10,7 @@ use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -36,20 +37,22 @@ class CategoryController extends Controller
 
         $request->user()->categories()->create($data);
 
-        return redirect()->back();
+        return redirect()->route('categories.index');
     }
 
     public function update(UpdateRequest $request, Category $category): RedirectResponse
     {
+        Gate::authorize('update', $category);
+        
         $category->update($request->validated());
 
-        return redirect()->back();
+        return redirect()->route('categories.index');
     }
 
     public function destroy(Category $category): RedirectResponse
     {
         $category->delete();
 
-        return redirect()->back();
+        return redirect()->route('categories.index');
     }
 }
