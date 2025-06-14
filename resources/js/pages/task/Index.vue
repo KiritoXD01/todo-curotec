@@ -8,6 +8,7 @@ import { useTaskStore } from '@/store/task';
 import type { BreadcrumbItem, Category, Pagination, Task } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
+import { ArrowUpDown } from 'lucide-vue-next';
 import Swal from 'sweetalert2';
 import { h, onMounted } from 'vue';
 
@@ -35,12 +36,24 @@ const breadcrumbs: BreadcrumbItem[] = [
 const columns: ColumnDef<Task>[] = [
     {
         accessorKey: 'title',
-        header: 'Title',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+            },
+                () => ['Title', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
         cell: ({ row }) => row.getValue('title'),
     },
     {
         accessorKey: 'due_date',
-        header: 'Due Date',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+            },
+                () => ['Due Date', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
         cell: ({ row }) => {
             const date = row.getValue('due_date');
             return date ? new Date(date as string).toLocaleDateString() : '-';
@@ -48,22 +61,46 @@ const columns: ColumnDef<Task>[] = [
     },
     {
         accessorKey: 'priority',
-        header: 'Priority',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+            },
+                () => ['Priority', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
         cell: ({ row }) => upperFirstLetter(row.getValue('priority')),
     },
     {
         accessorKey: 'status',
-        header: 'Status',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+            },
+                () => ['Status', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
         cell: ({ row }) => upperFirstLetter(row.getValue('status')),
     },
     {
         accessorKey: 'created_at',
-        header: 'Created At',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+            },
+                () => ['Created At', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
         cell: ({ row }) => row.getValue('created_at'),
     },
     {
         accessorKey: 'updated_at',
-        header: 'Updated At',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+            },
+                () => ['Updated At', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
         cell: ({ row }) => row.getValue('updated_at'),
     },
     {
@@ -136,6 +173,7 @@ onMounted(() => {
 </script>
 
 <template>
+
     <Head title="Tasks" />
 
     <AppLayout :breadcrumbs="breadcrumbs">

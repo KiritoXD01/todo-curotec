@@ -7,6 +7,7 @@ import { useCategoryStore } from '@/store/category';
 import type { BreadcrumbItem, Category, Pagination } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
+import { ArrowUpDown } from 'lucide-vue-next';
 import Swal from 'sweetalert2';
 import { h, onMounted } from 'vue';
 
@@ -30,22 +31,46 @@ const breadcrumbs: BreadcrumbItem[] = [
 const columns: ColumnDef<Category>[] = [
     {
         accessorKey: 'name',
-        header: 'Name',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+            },
+                () => ['Name', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
         cell: ({ row }) => row.getValue('name'),
     },
     {
         accessorKey: 'parent_name',
-        header: 'Parent',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+            },
+                () => ['Parent', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
         cell: ({ row }) => row.getValue('parent_name') || '-',
     },
     {
         accessorKey: 'created_at',
-        header: 'Created At',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+            },
+                () => ['Created At', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
         cell: ({ row }) => row.getValue('created_at'),
     },
     {
         accessorKey: 'updated_at',
-        header: 'Updated At',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+            },
+                () => ['Updated At', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
         cell: ({ row }) => row.getValue('updated_at'),
     },
     {
@@ -120,6 +145,7 @@ onMounted(() => {
 </script>
 
 <template>
+
     <Head title="Categories" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
