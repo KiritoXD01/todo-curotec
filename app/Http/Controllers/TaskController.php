@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Task;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -48,13 +49,17 @@ class TaskController extends Controller
 
     public function update(Task $task, UpdateRequest $request): RedirectResponse
     {
+        Gate::authorize('update', $task);
+
         $task->update($request->validated());
 
-        return redirect()->back();
+        return redirect()->route('tasks.index');
     }
 
     public function destroy(Task $task): RedirectResponse
     {
+        Gate::authorize('destroy', $task);
+
         $task->delete();
 
         return redirect()->route('tasks.index');

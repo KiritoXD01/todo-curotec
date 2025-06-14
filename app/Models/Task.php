@@ -6,12 +6,15 @@ namespace App\Models;
 
 use App\Enums\TaskPriorityEnum;
 use App\Enums\TaskStatusEnum;
+use App\Policies\TaskPolicy;
 use Database\Factories\TaskFactory;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[UsePolicy(TaskPolicy::class)]
 class Task extends Model
 {
     /** @use HasFactory<TaskFactory> */

@@ -1,11 +1,9 @@
 <?php
 
-
 declare(strict_types=1);
 
-use App\Models\User;
 use App\Models\Category;
-
+use App\Models\User;
 
 test('category can be deleted', function () {
     $user = User::factory()->create();
