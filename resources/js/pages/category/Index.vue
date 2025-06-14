@@ -4,7 +4,7 @@ import FormDialog from '@/components/category/FormDialog.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useCategoryStore } from '@/store/category';
-import type { BreadcrumbItem, Pagination, Category } from '@/types';
+import type { BreadcrumbItem, Category, Pagination } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
 import Swal from 'sweetalert2';
@@ -41,12 +41,12 @@ const columns: ColumnDef<Category>[] = [
     {
         accessorKey: 'created_at',
         header: 'Created At',
-        cell: ({ row }) => row.getValue('created_at')
+        cell: ({ row }) => row.getValue('created_at'),
     },
     {
         accessorKey: 'updated_at',
         header: 'Updated At',
-        cell: ({ row }) => row.getValue('updated_at')
+        cell: ({ row }) => row.getValue('updated_at'),
     },
     {
         id: 'actions',
@@ -54,47 +54,55 @@ const columns: ColumnDef<Category>[] = [
         cell: ({ row }) => {
             const category = row.original;
             return h('div', { class: 'flex gap-2' }, [
-                h(Button, {
-                    variant: 'outline',
-                    size: 'sm',
-                    onClick: () => {
-                        store.setCurrentItem(category);
-                        store.toggleDialog();
+                h(
+                    Button,
+                    {
+                        variant: 'outline',
+                        size: 'sm',
+                        onClick: () => {
+                            store.setCurrentItem(category);
+                            store.toggleDialog();
+                        },
                     },
-                }, 'Edit'),
-                h(Button, {
-                    variant: 'destructive',
-                    size: 'sm',
-                    onClick: async () => {
-                        const result = await Swal.fire({
-                            title: 'Are you sure?',
-                            text: "You won't be able to revert this!",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Yes, delete it!'
-                        });
-
-                        if (result.isConfirmed) {
-                            Swal.fire({
-                                title: 'Deleting...',
-                                allowOutsideClick: false,
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                }
+                    'Edit',
+                ),
+                h(
+                    Button,
+                    {
+                        variant: 'destructive',
+                        size: 'sm',
+                        onClick: async () => {
+                            const result = await Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You won't be able to revert this!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, delete it!',
                             });
 
-                            await store.deleteItem(category.id);
+                            if (result.isConfirmed) {
+                                Swal.fire({
+                                    title: 'Deleting...',
+                                    allowOutsideClick: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    },
+                                });
 
-                            Swal.fire({
-                                title: 'Deleted!',
-                                text: 'Category has been deleted.',
-                                icon: 'success'
-                            });
-                        }
+                                await store.deleteItem(category.id);
+
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Category has been deleted.',
+                                    icon: 'success',
+                                });
+                            }
+                        },
                     },
-                }, 'Delete'),
+                    'Delete',
+                ),
             ]);
         },
     },
@@ -115,15 +123,10 @@ onMounted(() => {
     <Head title="Categories" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="container mx-auto p-2 space-y-4">
+        <div class="container mx-auto space-y-4 p-2">
             <Button variant="outline" @click="store.toggleDialog()">Create Category</Button>
             <FormDialog />
-            <DataTable
-                :columns="columns"
-                :data="items.data"
-                :pagination="items"
-                @page-change="handlePageChange"
-            />
+            <DataTable :columns="columns" :data="items.data" :pagination="items" @page-change="handlePageChange" />
         </div>
     </AppLayout>
 </template>

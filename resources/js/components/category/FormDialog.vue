@@ -1,23 +1,23 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useCategoryStore } from '@/store/category';
-import { useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
-import * as z from 'zod';
-import { watch } from 'vue';
-import Swal from 'sweetalert2';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useCategoryStore } from '@/store/category';
+import { toTypedSchema } from '@vee-validate/zod';
+import Swal from 'sweetalert2';
+import { useForm } from 'vee-validate';
+import { watch } from 'vue';
+import * as z from 'zod';
 
 const store = useCategoryStore();
 
 const formSchema = toTypedSchema(
     z.object({
         name: z.string().min(1, 'Name is required').max(191, 'Name must be less than 191 characters'),
-        parent_id: z.number().nullable(),
-    })
+        parent_id: z.number().optional(),
+    }),
 );
 
 const form = useForm({
@@ -31,7 +31,7 @@ const onSubmit = form.handleSubmit(async (values) => {
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
-            }
+            },
         });
 
         if (store.mode === 'create') {
@@ -40,8 +40,8 @@ const onSubmit = form.handleSubmit(async (values) => {
                 icon: 'success',
                 title: 'Success!',
                 text: 'Category has been created successfully',
-                timer: 2000,
-                showConfirmButton: false
+                timer: 1500,
+                showConfirmButton: false,
             });
         } else if (store.currentItem) {
             await store.updateItem(store.currentItem.id, values);
@@ -49,11 +49,10 @@ const onSubmit = form.handleSubmit(async (values) => {
                 icon: 'success',
                 title: 'Success!',
                 text: 'Category has been updated successfully',
-                timer: 2000,
-                showConfirmButton: false
+                timer: 1500,
+                showConfirmButton: false,
             });
         }
-        store.toggleDialog();
         form.resetForm();
     } catch (error) {
         console.error('Error submitting form:', error);
@@ -71,12 +70,12 @@ watch(
         if (newItem) {
             form.setValues({
                 name: newItem.name,
-                parent_id: newItem.parent_id,
+                parent_id: newItem.parent_id || undefined,
             });
         } else {
             form.resetForm();
         }
-    }
+    },
 );
 </script>
 
@@ -102,30 +101,28 @@ watch(
                     <FormItem>
                         <FormLabel>Parent</FormLabel>
                         <Select v-bind="componentField" class="w-full">
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select parent" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem v-for="item in store.items.filter(item => item.parent_id === null)" :key="item.id" :value="item.id">
-                                        {{ item.name }}
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <FormControl>
+                                <SelectTrigger class="w-full">
+                                    <SelectValue placeholder="Select parent" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent class="w-full">
+                                <SelectItem v-for="item in store.items.filter((item) => item.parent_id === null)" :key="item.id" :value="item.id">
+                                    {{ item.name }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
                         <FormMessage />
                     </FormItem>
                 </FormField>
 
-                <div class="flex justify-end gap-2 mt-4">
-                    <Button type="button" variant="outline" @click="store.toggleDialog">
-                        Cancel
-                    </Button>
+                <div class="mt-4 flex justify-end gap-2">
+                    <Button type="button" variant="outline" @click="store.toggleDialog"> Cancel </Button>
                     <Button type="submit">
                         {{ store.mode === 'create' ? 'Create' : 'Update' }}
                     </Button>
                 </div>
-            </Form>
+            </form>
         </DialogContent>
     </Dialog>
 </template>

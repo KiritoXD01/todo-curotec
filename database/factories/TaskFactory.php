@@ -25,7 +25,7 @@ class TaskFactory extends Factory
             'uuid' => fake()->uuid,
             'title' => fake()->sentence(nbWords: 3),
             'description' => fake()->text(maxNbChars: 100),
-            'due_date' => fake()->date("Y-m-d"),
+            'due_date' => fake()->dateTimeBetween('now', '+1 year')->format('Y-m-d'),
             'priority' => fake()->randomElement(TaskPriorityEnum::cases()),
             'status' => fake()->randomElement(TaskStatusEnum::cases()),
         ];

@@ -1,23 +1,25 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useTaskStore } from '@/store/task';
-import { useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
-import * as z from 'zod';
-import { watch } from 'vue';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useUpperFirstLetter } from '@/composables/useUpperFirstLetter';
 import { TaskPriorityEnum, TaskStatusEnum } from '@/enums/enums';
-import Swal from 'sweetalert2';
+import { useTaskStore } from '@/store/task';
 import { Category } from '@/types';
+import { toTypedSchema } from '@vee-validate/zod';
+import Swal from 'sweetalert2';
+import { useForm } from 'vee-validate';
+import { watch } from 'vue';
+import * as z from 'zod';
 
 const { categories } = defineProps<{
     categories: Category[];
 }>();
 
 const store = useTaskStore();
+const { upperFirstLetter } = useUpperFirstLetter();
 
 const formSchema = toTypedSchema(
     z.object({
@@ -28,7 +30,7 @@ const formSchema = toTypedSchema(
         status: z.nativeEnum(TaskStatusEnum),
         category_id: z.number(),
         subcategory_id: z.number().optional(),
-    })
+    }),
 );
 
 const form = useForm({
@@ -42,7 +44,7 @@ const onSubmit = form.handleSubmit(async (values) => {
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
-            }
+            },
         });
 
         if (store.mode === 'create') {
@@ -51,8 +53,8 @@ const onSubmit = form.handleSubmit(async (values) => {
                 icon: 'success',
                 title: 'Success!',
                 text: 'Task has been created successfully',
-                timer: 2000,
-                showConfirmButton: false
+                timer: 1500,
+                showConfirmButton: false,
             });
         } else if (store.currentItem) {
             await store.updateItem(store.currentItem.id, values);
@@ -60,11 +62,10 @@ const onSubmit = form.handleSubmit(async (values) => {
                 icon: 'success',
                 title: 'Success!',
                 text: 'Task has been updated successfully',
-                timer: 2000,
-                showConfirmButton: false
+                timer: 1500,
+                showConfirmButton: false,
             });
         }
-        store.toggleDialog();
         form.resetForm();
     } catch (error) {
         console.error('Error submitting form:', error);
@@ -83,7 +84,7 @@ watch(
             form.setValues({
                 title: newItem.title,
                 description: newItem.description || '',
-                due_date: newItem.due_date || '',
+                due_date: newItem.due_date ? new Date(newItem.due_date).toISOString().split('T')[0] : '',
                 priority: newItem.priority,
                 status: newItem.status,
                 category_id: newItem.category_id || undefined,
@@ -92,7 +93,7 @@ watch(
         } else {
             form.resetForm();
         }
-    }
+    },
 );
 </script>
 
@@ -164,7 +165,7 @@ watch(
                             </FormControl>
                             <SelectContent>
                                 <SelectItem
-                                    v-for="subcategory in categories.filter(c => c.parent_id === form.values.category_id)"
+                                    v-for="subcategory in categories.filter((c) => c.parent_id === form.values.category_id)"
                                     :key="subcategory.id" :value="subcategory.id">
                                     {{ subcategory.name }}
                                 </SelectItem>
@@ -186,7 +187,7 @@ watch(
                             <SelectContent>
                                 <SelectItem v-for="priority in Object.values(TaskPriorityEnum)" :key="priority"
                                     :value="priority">
-                                    {{ priority }}
+                                    {{ upperFirstLetter(priority) }}
                                 </SelectItem>
                             </SelectContent>
                         </Select>
@@ -206,7 +207,7 @@ watch(
                             <SelectContent>
                                 <SelectItem v-for="status in Object.values(TaskStatusEnum)" :key="status"
                                     :value="status">
-                                    {{ status }}
+                                    {{ upperFirstLetter(status) }}
                                 </SelectItem>
                             </SelectContent>
                         </Select>
@@ -214,15 +215,13 @@ watch(
                     </FormItem>
                 </FormField>
 
-                <div class="flex justify-end gap-2 mt-4">
-                    <Button type="button" variant="outline" @click="store.toggleDialog">
-                        Cancel
-                    </Button>
+                <div class="mt-4 flex justify-end gap-2">
+                    <Button type="button" variant="outline" @click="store.toggleDialog"> Cancel </Button>
                     <Button type="submit">
                         {{ store.mode === 'create' ? 'Create' : 'Update' }}
                     </Button>
                 </div>
-            </Form>
+            </form>
         </DialogContent>
     </Dialog>
 </template>

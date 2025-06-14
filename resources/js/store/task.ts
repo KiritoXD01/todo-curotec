@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia';
+import type { ModeOptions, Pagination, Task } from '@/types';
 import { router } from '@inertiajs/vue3';
+import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Task, Pagination, ModeOptions } from '@/types';
 
 export const useTaskStore = defineStore('task', () => {
     // State
@@ -15,17 +15,21 @@ export const useTaskStore = defineStore('task', () => {
     async function fetchItems(url?: string) {
         loading.value = true;
         try {
-            router.get(url || '/tasks', {}, {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: (page) => {
-                    const data = page.props.items as Pagination<Task>;
-                    items.value = data.data;
+            router.get(
+                url || '/tasks',
+                {},
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    onSuccess: (page) => {
+                        const data = page.props.items as Pagination<Task>;
+                        items.value = data.data;
+                    },
+                    onFinish: () => {
+                        loading.value = false;
+                    },
                 },
-                onFinish: () => {
-                    loading.value = false;
-                },
-            });
+            );
         } catch (error) {
             console.error('Error fetching tasks:', error);
             loading.value = false;
@@ -35,11 +39,9 @@ export const useTaskStore = defineStore('task', () => {
 
     async function createItem(data: Partial<Task>) {
         try {
+            toggleDialog();
             router.post('/tasks', data, {
                 preserveScroll: true,
-                onSuccess: () => {
-                    toggleDialog();
-                },
             });
         } catch (error) {
             console.error('Error creating task:', error);
@@ -49,11 +51,9 @@ export const useTaskStore = defineStore('task', () => {
 
     async function updateItem(id: number, data: Partial<Task>) {
         try {
+            toggleDialog();
             router.put(`/tasks/${id}`, data, {
                 preserveScroll: true,
-                onSuccess: () => {
-                    toggleDialog();
-                },
             });
         } catch (error) {
             console.error('Error updating task:', error);
@@ -66,7 +66,7 @@ export const useTaskStore = defineStore('task', () => {
             router.delete(`/tasks/${id}`, {
                 preserveScroll: true,
                 onSuccess: () => {
-                    items.value = items.value.filter(item => item.id !== id);
+                    items.value = items.value.filter((item) => item.id !== id);
                 },
             });
         } catch (error) {

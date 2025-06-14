@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia';
+import type { Category, ModeOptions, Pagination } from '@/types';
 import { router } from '@inertiajs/vue3';
+import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Category, Pagination, ModeOptions } from '@/types';
 
 export const useCategoryStore = defineStore('category', () => {
     // State
@@ -15,17 +15,21 @@ export const useCategoryStore = defineStore('category', () => {
     async function fetchItems(url?: string) {
         loading.value = true;
         try {
-            router.get(url || '/categories', {}, {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: (page) => {
-                    const data = page.props.items as Pagination<Category>;
-                    items.value = data.data;
+            router.get(
+                url || '/categories',
+                {},
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    onSuccess: (page) => {
+                        const data = page.props.items as Pagination<Category>;
+                        items.value = data.data;
+                    },
+                    onFinish: () => {
+                        loading.value = false;
+                    },
                 },
-                onFinish: () => {
-                    loading.value = false;
-                },
-            });
+            );
         } catch (error) {
             console.error('Error fetching categories:', error);
             loading.value = false;
@@ -35,11 +39,9 @@ export const useCategoryStore = defineStore('category', () => {
 
     async function createItem(data: Partial<Category>) {
         try {
+            toggleDialog();
             router.post('/categories', data, {
                 preserveScroll: true,
-                onSuccess: () => {
-                    toggleDialog();
-                },
             });
         } catch (error) {
             console.error('Error creating category:', error);
@@ -49,11 +51,9 @@ export const useCategoryStore = defineStore('category', () => {
 
     async function updateItem(id: number, data: Partial<Category>) {
         try {
+            toggleDialog();
             router.put(`/categories/${id}`, data, {
                 preserveScroll: true,
-                onSuccess: () => {
-                    toggleDialog();
-                },
             });
         } catch (error) {
             console.error('Error updating category:', error);
@@ -66,7 +66,7 @@ export const useCategoryStore = defineStore('category', () => {
             router.delete(`/categories/${id}`, {
                 preserveScroll: true,
                 onSuccess: () => {
-                    items.value = items.value.filter(item => item.id !== id);
+                    items.value = items.value.filter((item) => item.id !== id);
                 },
             });
         } catch (error) {

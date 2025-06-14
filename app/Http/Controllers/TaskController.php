@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Task\StoreRequest;
-use App\Http\Resources\CategoryResource;
+use App\Http\Requests\Task\UpdateRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Category;
 use App\Models\Task;
@@ -27,13 +27,13 @@ class TaskController extends Controller
             ->simplePaginate(10);
 
         $categories = Category::query()
-            ->where("user_id", $user_id)
-            ->select("id", "name", "parent_id")
+            ->where('user_id', $user_id)
+            ->select('id', 'name', 'parent_id')
             ->get();
 
         return Inertia::render('task/Index', [
             'items' => TaskResource::collection($tasks),
-            'categories' => $categories
+            'categories' => $categories,
         ]);
     }
 
@@ -44,6 +44,13 @@ class TaskController extends Controller
         $request->user()->tasks()->create($data);
 
         return redirect()->route('tasks.index');
+    }
+
+    public function update(Task $task, UpdateRequest $request): RedirectResponse
+    {
+        $task->update($request->validated());
+
+        return redirect()->back();
     }
 
     public function destroy(Task $task): RedirectResponse

@@ -2,14 +2,14 @@
 import DataTable from '@/components/DataTable.vue';
 import FormDialog from '@/components/task/FormDialog.vue';
 import { Button } from '@/components/ui/button';
+import { useUpperFirstLetter } from '@/composables/useUpperFirstLetter';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useTaskStore } from '@/store/task';
 import type { BreadcrumbItem, Category, Pagination, Task } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
-import { onMounted, h } from 'vue';
 import Swal from 'sweetalert2';
-import { useUpperFirstLetter } from '@/composables/useUpperFirstLetter';
+import { h, onMounted } from 'vue';
 
 interface Props {
     items: Pagination<Task>;
@@ -59,12 +59,12 @@ const columns: ColumnDef<Task>[] = [
     {
         accessorKey: 'created_at',
         header: 'Created At',
-        cell: ({ row }) => row.getValue('created_at')
+        cell: ({ row }) => row.getValue('created_at'),
     },
     {
         accessorKey: 'updated_at',
         header: 'Updated At',
-        cell: ({ row }) => row.getValue('updated_at')
+        cell: ({ row }) => row.getValue('updated_at'),
     },
     {
         id: 'actions',
@@ -72,47 +72,55 @@ const columns: ColumnDef<Task>[] = [
         cell: ({ row }) => {
             const task = row.original;
             return h('div', { class: 'flex gap-2' }, [
-                h(Button, {
-                    variant: 'outline',
-                    size: 'sm',
-                    onClick: () => {
-                        store.setCurrentItem(task);
-                        store.toggleDialog();
+                h(
+                    Button,
+                    {
+                        variant: 'outline',
+                        size: 'sm',
+                        onClick: () => {
+                            store.setCurrentItem(task);
+                            store.toggleDialog();
+                        },
                     },
-                }, 'Edit'),
-                h(Button, {
-                    variant: 'destructive',
-                    size: 'sm',
-                    onClick: async () => {
-                        const result = await Swal.fire({
-                            title: 'Are you sure?',
-                            text: "You won't be able to revert this!",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Yes, delete it!'
-                        });
-
-                        if (result.isConfirmed) {
-                            Swal.fire({
-                                title: 'Deleting...',
-                                allowOutsideClick: false,
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                }
+                    'Edit',
+                ),
+                h(
+                    Button,
+                    {
+                        variant: 'destructive',
+                        size: 'sm',
+                        onClick: async () => {
+                            const result = await Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You won't be able to revert this!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, delete it!',
                             });
 
-                            await store.deleteItem(task.id);
+                            if (result.isConfirmed) {
+                                Swal.fire({
+                                    title: 'Deleting...',
+                                    allowOutsideClick: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    },
+                                });
 
-                            Swal.fire({
-                                title: 'Deleted!',
-                                text: 'Task has been deleted.',
-                                icon: 'success'
-                            });
-                        }
+                                await store.deleteItem(task.id);
+
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Task has been deleted.',
+                                    icon: 'success',
+                                });
+                            }
+                        },
                     },
-                }, 'Delete'),
+                    'Delete',
+                ),
             ]);
         },
     },
@@ -128,11 +136,10 @@ onMounted(() => {
 </script>
 
 <template>
-
     <Head title="Tasks" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="container mx-auto p-2 space-y-4">
+        <div class="container mx-auto space-y-4 p-2">
             <Button variant="outline" @click="store.toggleDialog()">Create Task</Button>
             <FormDialog :categories="categories" />
             <DataTable :columns="columns" :data="items.data" :pagination="items" @page-change="handlePageChange" />
