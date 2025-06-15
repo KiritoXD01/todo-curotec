@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Task\StoreRequest;
 use App\Http\Requests\Task\UpdateRequest;
+use App\Http\Resources\CategoryListResource;
 use App\Http\Resources\TaskResource;
 use App\Models\Category;
 use App\Models\Task;
@@ -34,7 +35,7 @@ class TaskController extends Controller
 
         return Inertia::render('task/Index', [
             'items' => TaskResource::collection($tasks),
-            'categories' => $categories,
+            'categories' => CategoryListResource::collection($categories),
         ]);
     }
 

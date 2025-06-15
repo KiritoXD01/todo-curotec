@@ -45,6 +45,12 @@ export interface Category {
     updated_at: string;
 }
 
+export interface CategoryList {
+    id: number;
+    name: string;
+    parent_id: number | null;
+}
+
 export interface Task {
     id: number;
     uuid: string;
@@ -78,6 +84,10 @@ export interface Pagination<T> {
         to: number;
         total: number;
     };
+}
+
+export interface Collection<T> {
+    data: T[];
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;

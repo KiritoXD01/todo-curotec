@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useUpperFirstLetter } from '@/composables/useUpperFirstLetter';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { useTaskStore } from '@/store/task';
-import type { BreadcrumbItem, Category, Pagination, Task } from '@/types';
+import type { BreadcrumbItem, CategoryList, Collection, Pagination, Task } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef } from '@tanstack/vue-table';
 import { ArrowUpDown } from 'lucide-vue-next';
@@ -14,7 +14,7 @@ import { h, onMounted } from 'vue';
 
 interface Props {
     items: Pagination<Task>;
-    categories: Category[];
+    categories: Collection<CategoryList>;
 }
 
 defineProps<Props>();
@@ -179,7 +179,7 @@ onMounted(() => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="container mx-auto space-y-4 p-2">
             <Button variant="outline" @click="store.toggleDialog()">Create Task</Button>
-            <FormDialog :categories="categories" />
+            <FormDialog :categories="categories.data" />
             <DataTable :columns="columns" :data="items.data" :pagination="items" @page-change="handlePageChange" />
         </div>
     </AppLayout>

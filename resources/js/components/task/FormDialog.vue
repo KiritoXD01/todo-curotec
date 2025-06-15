@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useUpperFirstLetter } from '@/composables/useUpperFirstLetter';
 import { TaskPriorityEnum, TaskStatusEnum } from '@/enums/enums';
 import { useTaskStore } from '@/store/task';
-import { Category } from '@/types';
+import { CategoryList } from '@/types';
 import { toTypedSchema } from '@vee-validate/zod';
 import Swal from 'sweetalert2';
 import { useForm } from 'vee-validate';
@@ -15,7 +15,7 @@ import { watch } from 'vue';
 import * as z from 'zod';
 
 const { categories } = defineProps<{
-    categories: Category[];
+    categories: CategoryList[];
 }>();
 
 const store = useTaskStore();
