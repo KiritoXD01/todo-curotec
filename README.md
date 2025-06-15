@@ -189,7 +189,7 @@ DB_HOST=127.0.0.1
 DB_PORT=5432
 DB_DATABASE=todo_curotec
 DB_USERNAME=postgres
-DB_PASSWORD=postgres
+DB_PASSWORD=
 ```
 
 4. Create the database:
